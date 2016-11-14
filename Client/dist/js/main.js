@@ -26345,22 +26345,39 @@ var FavouriteRepoDisplay=React.createClass({displayName: "FavouriteRepoDisplay",
 			PrivateMessage="This Repository is a private Repository";
 		}
 		return (
-			React.createElement("div", {style: {marginTop:'50'}}, 
+			React.createElement("div", null, 
 			React.createElement("div", {className: "container"}, 
 			React.createElement("div", {className: "row"}, 
-			React.createElement("div", {className: "col-lg-3 col-offset-1"}, 
-			React.createElement("img", {src: this.props.RepoObj.Avatar, className: "img-rounded", alt: "User's Picture Here", height: "200", width: "200"})
+			React.createElement("div", {className: "col-lg-11 col-offset-1 col-md-3"}, 
+			React.createElement("div", {className: "panel-group", id: "accordion"}, 
+			React.createElement("div", {className: "panel panel-default"}, 
+			React.createElement("div", {className: "panel-heading"}, 
+			React.createElement("h4", {className: "panel-title", style: {textAlign:"center"}}, 
+			React.createElement("a", {"data-toggle": "collapse", "data-parent": "#accordion", href: '#'+this.props.RepoObj.repoID+'a'}, React.createElement("span", {class: "glyphicon glyphicon-folder-close"}
+			), this.props.RepoObj.Name)
+			)
 			), 
-			React.createElement("div", {className: "col-lg-8"}, 
-			 React.createElement("h3", null, " Repository ID:", React.createElement("small", {style: {fontSize:"20px"}}, " ", this.props.RepoObj.repoID, " ")), 
-			React.createElement("h3", null, " Repository Name:  ", React.createElement("small", {style: {fontSize:"20px"}}, " ", this.props.RepoObj.Name, " ")), 
-			React.createElement("h3", null, " Category:  ", React.createElement("small", {style: {fontSize:"20px"}}, " ", this.props.RepoObj.Category, " ")), 
-			React.createElement("h3", null, " Description:  ", React.createElement("small", {style: {fontSize:"20px"}}, " ", this.props.RepoObj.Description, " ")), 
-			React.createElement("h3", null, " Repository Access:  ", React.createElement("small", {style: {fontSize:"20px"}}, " ", PrivateMessage, " ")), 
-			React.createElement("h3", null, " Star-Rating:  ", React.createElement("small", {style: {fontSize:"20px"}}, " ", this.props.RepoObj.Stars, " ")), 
-			React.createElement("br", null), 
-			React.createElement("a", {className: "btn btn-warning", role: "button", "data-toggle": "modal", "data-target": '#'+this.props.RepoObj.repoID}, " Update Repository "), "   ", 
-			React.createElement("button", {className: "btn btn-danger", onClick: this.DeleteRepo}, " Delete this repository ")
+			React.createElement("div", {id: this.props.RepoObj.repoID+'a', className: "panel-collapse collapse"}, 
+			React.createElement("div", {className: "panel-body"}, 
+			React.createElement("div", {className: "row", style: {backgroundColor:"#74AFAD"}}, 
+			React.createElement("div", {className: "col-offset-1 col-lg-4"}, 
+			React.createElement("img", {src: this.props.RepoObj.Avatar, alt: "Poster Image", height: "300", width: "300", style: {marginTop:'20'}})
+			), 
+			React.createElement("div", {className: "col-lg-6"}, 
+			React.createElement("h1", null, this.props.RepoObj.Name), 
+			React.createElement("p", {className: "lead"}, React.createElement("span", {style: {textDecoration:'underline'}}, " Repository ID "), ": ", this.props.RepoObj.repoID), 
+			React.createElement("p", {className: "lead"}, " Repository Name: ", this.props.RepoObj.Name), 
+			React.createElement("p", {className: "lead"}, " Description: ", this.props.RepoObj.Description), 
+			React.createElement("p", {className: "lead"}, " Stars: ", this.props.RepoObj.Stars), 
+			React.createElement("button", {className: "btn btn-warning", role: "button", "data-toggle": "modal", "data-target": '#'+this.props.RepoObj.repoID}, " Update Repository ", React.createElement("span", {className: "glyphicon glyphicon-retweet"})), "  ", 
+			React.createElement("button", {className: "btn btn-danger", onClick: this.DeleteRepo}, " Delete ", React.createElement("span", {className: "glyphicon glyphicon-trash"})), 
+			React.createElement("br", null)
+			)
+			)
+			)
+			)
+			)
+			)
 			)
 			)
 			), 

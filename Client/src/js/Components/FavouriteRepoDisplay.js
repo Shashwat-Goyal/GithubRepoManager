@@ -23,22 +23,39 @@ var FavouriteRepoDisplay=React.createClass({
 			PrivateMessage="This Repository is a private Repository";
 		}
 		return (
-			<div style={{marginTop:'50'}}>
-			<div className="container"> 
+			<div>
+			<div className="container">
 			<div className="row">
-			<div className="col-lg-3 col-offset-1">
-			<img src={this.props.RepoObj.Avatar} className="img-rounded" alt="User's Picture Here" height="200" width="200"></img>
+			<div className="col-lg-11 col-offset-1 col-md-3">
+			<div className="panel-group" id="accordion">
+			<div className="panel panel-default">
+			<div className="panel-heading">
+			<h4 className="panel-title" style={{textAlign:"center"}}>
+			<a data-toggle="collapse" data-parent="#accordion" href={'#'+this.props.RepoObj.repoID+'a'}><span class="glyphicon glyphicon-folder-close">
+			</span>{this.props.RepoObj.Name}</a>
+			</h4>
 			</div>
-			<div className="col-lg-8">
-			 <h3> Repository ID:<small style={{fontSize:"20px"}}> {this.props.RepoObj.repoID} </small></h3>
-			<h3> Repository Name:  <small style={{fontSize:"20px"}}> {this.props.RepoObj.Name} </small></h3>
-			<h3> Category:  <small style={{fontSize:"20px"}}> {this.props.RepoObj.Category} </small></h3>
-			<h3> Description:  <small style={{fontSize:"20px"}}> {this.props.RepoObj.Description} </small></h3>
-			<h3> Repository Access:  <small style={{fontSize:"20px"}}> {PrivateMessage} </small></h3>
-			<h3> Star-Rating:  <small style={{fontSize:"20px"}}> {this.props.RepoObj.Stars} </small></h3>
+			<div id={this.props.RepoObj.repoID+'a'} className="panel-collapse collapse">
+			<div className="panel-body">
+			<div className="row" style={{backgroundColor:"#74AFAD"}}>
+			<div className="col-offset-1 col-lg-4">
+			<img src={this.props.RepoObj.Avatar} alt="Poster Image" height="300" width="300" style={{marginTop:'20'}}></img>
+			</div>
+			<div className="col-lg-6">
+			<h1>{this.props.RepoObj.Name}</h1>
+			<p className="lead"><span style={{textDecoration:'underline'}}> Repository ID </span>: {this.props.RepoObj.repoID}</p>
+			<p className="lead"> Repository Name: {this.props.RepoObj.Name}</p>
+			<p className="lead"> Description: {this.props.RepoObj.Description}</p>
+			<p className="lead"> Stars: {this.props.RepoObj.Stars}</p>
+			<button className="btn btn-warning" role="button" data-toggle="modal" data-target={'#'+this.props.RepoObj.repoID} > Update Repository <span className="glyphicon glyphicon-retweet"></span></button>&nbsp;&emsp;
+			<button className="btn btn-danger" onClick={this.DeleteRepo} > Delete <span className="glyphicon glyphicon-trash"></span></button>
 			<br></br>
-			<a className="btn btn-warning"  role="button" data-toggle="modal" data-target={'#'+this.props.RepoObj.repoID}> Update Repository </a>&emsp;&nbsp;&nbsp;
-			<button className="btn btn-danger" onClick={this.DeleteRepo}> Delete this repository </button>
+			</div>
+			</div>
+			</div>
+			</div>
+			</div>
+			</div>
 			</div>
 			</div>
 			</div>
