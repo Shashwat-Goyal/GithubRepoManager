@@ -26515,6 +26515,7 @@ var GetFavouriteRepositories=React.createClass({displayName: "GetFavouriteReposi
 		return(
 			React.createElement("div", {style: {marginTop:'100'}}, 
 			React.createElement("div", {style: {textAlign:'center'}}, 
+			"Please Select your Category:  ", 
 				React.createElement("select", {id: "myList", onChange: this.GetCategoryFavourites}, 
 					React.createElement("option", {value: "Select"}, "Select"), 
 					SelectListArr

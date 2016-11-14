@@ -121,6 +121,7 @@ var GetFavouriteRepositories=React.createClass({
 		return(
 			<div style={{marginTop:'100'}}>
 			<div style={{textAlign:'center'}}>
+			Please Select your Category: &emsp;
 				<select id='myList' onChange={this.GetCategoryFavourites}>
 					<option value="Select">Select</option>
 					{SelectListArr}
