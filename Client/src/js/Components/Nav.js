@@ -28,9 +28,6 @@ var Nav=React.createClass({
 							<Link to="/contactUs"> Contact Us </Link>
 						</li>
 						<li>
-							<Link to="/search"> Search </Link>
-						</li>
-						<li>
 							<Link to="/logout"> Logout </Link>
 						</li>
 

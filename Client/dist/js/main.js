@@ -26206,6 +26206,7 @@ var DisplayRepositoryBox=React.createClass({displayName: "DisplayRepositoryBox",
 		repoDbObj.Access=repoObject.private;
 		repoDbObj.Stars=repoObject.stargazers_count;
 		repoDbObj.Category=Category;
+		repoDbObj.Avatar=repoObject.owner.avatar_url;
 		var url="http://localhost:8085/repos/AddRepositories";
 		$.ajax({
 			url:url,
@@ -26305,7 +26306,7 @@ var DisplayRepositoryBox=React.createClass({displayName: "DisplayRepositoryBox",
 
 module.exports=DisplayRepositoryBox;
 
-},{"./ModalCategory":241,"react":232}],238:[function(require,module,exports){
+},{"./ModalCategory":242,"react":232}],238:[function(require,module,exports){
 var React=require('react');
 
 var Examples=React.createClass({displayName: "Examples",
@@ -26320,11 +26321,67 @@ module.exports=Examples;
 
 },{"react":232}],239:[function(require,module,exports){
 var React=require('react');
+var ModalUpdate=require('./ModalUpdate');
+var FavouriteRepoDisplay=React.createClass({displayName: "FavouriteRepoDisplay",
 
+	handleUpdate:function(repoID, Description){
+		alert(repoID+" "+Description);
+		this.props.updateCall(repoID, Description)
+	},
+
+	DeleteRepo:function(){
+		alert('Entering Delete');
+		this.props.onDelete(this.props.RepoObj.repoID);
+	},
+
+	render:function(){
+		console.log(this.props.RepoObj);
+		var privacy=this.props.RepoObj.Access;
+		var PrivateMessage='';
+		if(privacy===false){
+			PrivateMessage="This Repository is available for public";
+		}
+		else{
+			PrivateMessage="This Repository is a private Repository";
+		}
+		return (
+			React.createElement("div", {style: {marginTop:'50'}}, 
+			React.createElement("div", {className: "container"}, 
+			React.createElement("div", {className: "row"}, 
+			React.createElement("div", {className: "col-lg-3 col-offset-1"}, 
+			React.createElement("img", {src: this.props.RepoObj.Avatar, className: "img-rounded", alt: "User's Picture Here", height: "200", width: "200"})
+			), 
+			React.createElement("div", {className: "col-lg-8"}, 
+			 React.createElement("h3", null, " Repository ID:", React.createElement("small", {style: {fontSize:"20px"}}, " ", this.props.RepoObj.repoID, " ")), 
+			React.createElement("h3", null, " Repository Name:  ", React.createElement("small", {style: {fontSize:"20px"}}, " ", this.props.RepoObj.Name, " ")), 
+			React.createElement("h3", null, " Category:  ", React.createElement("small", {style: {fontSize:"20px"}}, " ", this.props.RepoObj.Category, " ")), 
+			React.createElement("h3", null, " Description:  ", React.createElement("small", {style: {fontSize:"20px"}}, " ", this.props.RepoObj.Description, " ")), 
+			React.createElement("h3", null, " Repository Access:  ", React.createElement("small", {style: {fontSize:"20px"}}, " ", PrivateMessage, " ")), 
+			React.createElement("h3", null, " Star-Rating:  ", React.createElement("small", {style: {fontSize:"20px"}}, " ", this.props.RepoObj.Stars, " ")), 
+			React.createElement("br", null), 
+			React.createElement("a", {className: "btn btn-warning", role: "button", "data-toggle": "modal", "data-target": '#'+this.props.RepoObj.repoID}, " Update Repository "), "   ", 
+			React.createElement("button", {className: "btn btn-danger", onClick: this.DeleteRepo}, " Delete this repository ")
+			)
+			)
+			), 
+			React.createElement("br", null), 
+			React.createElement("hr", null), 
+			React.createElement(ModalUpdate, {id: this.props.RepoObj.repoID, category: this.props.RepoObj.Category, onUpdate: this.handleUpdate})
+			)
+			);
+		}
+});
+
+module.exports=FavouriteRepoDisplay;
+
+},{"./ModalUpdate":243,"react":232}],240:[function(require,module,exports){
+var React=require('react');
+
+var FavouriteRepoDisplay=require('./FavouriteRepoDisplay');
 var GetFavouriteRepositories=React.createClass({displayName: "GetFavouriteRepositories",
 
 	getInitialState:function(){
-		return({SelectOptions:[], value:'select'})
+		return({SelectOptions:[], value:'select', FavouriteRepoObj:[]});
 	},
 	
 	componentDidMount:function(){
@@ -26357,9 +26414,68 @@ var GetFavouriteRepositories=React.createClass({displayName: "GetFavouriteReposi
 			dataType:'JSON',
 			success:function(data){
 				console.log(data);
+				this.setState({FavouriteRepoObj:data});
 			}.bind(this),
 			error:function(err){
 				console.log(err);	
+			}.bind(this)
+		});
+	},
+
+	updateRepository:function(repoID, Description){
+		alert(repoID+" "+Description);
+		var UpdateObj={};
+		UpdateObj.repoID=repoID;
+		UpdateObj.Description=Description;
+
+		var url="http://localhost:8085/repos/UpdateRepository";
+		$.ajax({
+			url:url,
+			type:'PUT',
+			data:UpdateObj,
+			success:function(data){
+				console.log(data);
+				var index=this.state.FavouriteRepoObj.findIndex(function(element){
+					console.log(element);
+					return (element.repoID===UpdateObj.repoID);
+				});
+				if(index!=-1){
+					console.log("executing");
+					this.state.FavouriteRepoObj[index].Description=Description;
+					this.setState({FavouriteRepoObj:this.state.FavouriteRepoObj});
+					console.log(this.state.FavouriteRepoObj);
+				}
+				else{
+					console.log("not executing");
+				}
+			}.bind(this),
+			error:function(err){
+				console.log(err);
+			}.bind(this)
+		});
+	},
+
+	DeleteRepository:function(repoID){
+		alert(repoID);
+		var DeleteRepoObj={};
+		DeleteRepoObj.repoID=repoID;
+		var url="http://localhost:8085/repos/DeleteRepository";
+		$.ajax({
+			url:url,
+			type:'DELETE',
+			data:DeleteRepoObj,
+			success:function(data){
+				console.log(data);
+				var index=this.state.FavouriteRepoObj.findIndex(function(element){
+					return element.repoID===DeleteRepoObj.repoID;
+				});
+				if(index!=-1){
+					this.state.FavouriteRepoObj.splice(index, 1);
+					this.setState({FavouriteRepoObj:this.state.FavouriteRepoObj});
+				}
+			}.bind(this),
+			error:function(err){
+				console.log(err);
 			}.bind(this)
 		});
 	},
@@ -26372,21 +26488,30 @@ var GetFavouriteRepositories=React.createClass({displayName: "GetFavouriteReposi
 			console.log('entering');
 			return(React.createElement("option", {value: option}, option));
 		});
+
+		var FavouriteRepoDisplayArr=this.state.FavouriteRepoObj.map(function(Repo){
+			console.log('entering');
+			return(React.createElement(FavouriteRepoDisplay, {RepoObj: Repo, updateCall: this.updateRepository, onDelete: this.DeleteRepository}));
+		}.bind(this));
+
 		console.log(SelectListArr);
 		return(
-			React.createElement("div", {style: {marginTop:'100', textAlign:'center'}}, 
+			React.createElement("div", {style: {marginTop:'100'}}, 
+			React.createElement("div", {style: {textAlign:'center'}}, 
 				React.createElement("select", {id: "myList", onChange: this.GetCategoryFavourites}, 
 					React.createElement("option", {value: "Select"}, "Select"), 
 					SelectListArr
 				)
-
+				), 
+				React.createElement("hr", null), 
+				FavouriteRepoDisplayArr
 			)
 			);
 	}
 });
 
 module.exports=GetFavouriteRepositories;
-},{"react":232}],240:[function(require,module,exports){
+},{"./FavouriteRepoDisplay":239,"react":232}],241:[function(require,module,exports){
 var React=require('react');
 var NavComponent=require('./Nav');
 
@@ -26402,7 +26527,7 @@ var MainComponent=React.createClass({displayName: "MainComponent",
 	});
 
 	module.exports=MainComponent;
-},{"./Nav":242,"react":232}],241:[function(require,module,exports){
+},{"./Nav":244,"react":232}],242:[function(require,module,exports){
 var React=require('react');
 
 var ModalCategory=React.createClass({displayName: "ModalCategory",
@@ -26489,7 +26614,70 @@ var ModalCategory=React.createClass({displayName: "ModalCategory",
 
 module.exports=ModalCategory;
 
-},{"react":232}],242:[function(require,module,exports){
+},{"react":232}],243:[function(require,module,exports){
+var React=require('react');
+
+var ModalUpdate=React.createClass({displayName: "ModalUpdate",
+
+	UpdateRepository:function(){
+		var repoID=this.refs.RepoID.value;
+		var Description=this.refs.Description.value;
+		this.refs.Description.value='';
+		alert(repoID+" "+Description);
+		this.props.onUpdate(repoID, Description);
+	},
+
+	render:function(){
+		var modalID=this.props.id;
+
+		return (
+			React.createElement("div", null, 
+			React.createElement("div", {id: modalID, className: "modal fade", tabIndex: "-1", role: "dialog"}, 
+			React.createElement("div", {className: "modal-dialog"}, 
+			React.createElement("div", {className: "modal-content"}, 
+			React.createElement("div", {className: "modal-header"}, 
+			React.createElement("button", {className: "close", "data-dismiss": "modal"}, "×"), 
+
+			React.createElement("h4", {className: "modal-title"}, " Update Repository "), 
+			
+
+			React.createElement("div", {className: "modal-body"}, 
+			React.createElement("form", {className: "form-horizontal"}, 
+			React.createElement("div", {className: "form-group"}, 
+			React.createElement("label", {className: "col-lg-3 control-label", for: "RepoID"}, " Repository ID: "), 
+			React.createElement("div", {className: "col-lg-9"}, 
+			React.createElement("input", {className: "form-control", id: "RepoID", placeholder: "RepoID", type: "text", ref: "RepoID", value: this.props.id, readOnly: "readOnly"})
+			)
+			), 
+
+			React.createElement("div", {className: "form-group"}, 
+			React.createElement("label", {className: "col-lg-3 control-label", for: "Description"}, " Add a Description: "), 
+			React.createElement("div", {className: "col-lg-9"}, 
+			React.createElement("input", {className: "form-control", id: "Description", placeholder: "Please Enter a Description", type: "text", ref: "Description"})
+			)
+			), 
+
+			React.createElement("div", {className: "form-group"}, 
+			React.createElement("label", {className: "col-lg-3 control-label"}, "  "), 
+			React.createElement("div", {className: "col-lg-9"}, 
+			React.createElement("br", null), 
+			React.createElement("button", {className: "btn btn-success btn-block", type: "submit", "data-dismiss": "modal", onClick: this.UpdateRepository}, " Update Repository ")
+			)
+			)
+			)	
+			)
+			)
+			)
+			)
+			)
+			)
+			);
+	}
+});
+
+module.exports=ModalUpdate;
+
+},{"react":232}],244:[function(require,module,exports){
 var React=require('react');
 var Link=require('react-router').Link;
 var IndexLink=require('react-router').IndexLink;
@@ -26518,9 +26706,6 @@ var Nav=React.createClass({displayName: "Nav",
 						), 
 						React.createElement("li", null, 
 							React.createElement(Link, {to: "/contactUs"}, " Contact Us ")
-						), 
-						React.createElement("li", null, 
-							React.createElement(Link, {to: "/search"}, " Search ")
 						), 
 						React.createElement("li", null, 
 							React.createElement(Link, {to: "/logout"}, " Logout ")
@@ -26571,7 +26756,7 @@ var Nav=React.createClass({displayName: "Nav",
 });
 
 module.exports=Nav;
-},{"react":232,"react-router":81}],243:[function(require,module,exports){
+},{"react":232,"react-router":81}],245:[function(require,module,exports){
 var React=require('react');
 var SearchComponent=require('./SearchComponent');
 var DisplayComponent=require('./DisplayComponent');
@@ -26639,7 +26824,7 @@ var ParentComponent=React.createClass({displayName: "ParentComponent",
 
 module.exports=ParentComponent;
 
-},{"./DisplayComponent":236,"./SearchComponent":244,"react":232}],244:[function(require,module,exports){
+},{"./DisplayComponent":236,"./SearchComponent":246,"react":232}],246:[function(require,module,exports){
 var React=require('react');
 
 var SearchComponent=React.createClass({displayName: "SearchComponent",
@@ -26709,7 +26894,7 @@ var SearchComponent=React.createClass({displayName: "SearchComponent",
 
 module.exports=SearchComponent;
 
-},{"react":232}],245:[function(require,module,exports){
+},{"react":232}],247:[function(require,module,exports){
 var React=require('react');
 var ReactDOM=require('react-dom');
 var Route=require('react-router').Route;
@@ -26734,4 +26919,4 @@ ReactDOM.render(
 	), 
 	document.getElementById('app')); //puts the virtual dom & injects into the main physical DOM.
 
-},{"./Components/About":235,"./Components/Examples":238,"./Components/GetFavouriteRepositories":239,"./Components/MainComponent":240,"./Components/ParentComponent":243,"react":232,"react-dom":51,"react-router":81}]},{},[245]);
+},{"./Components/About":235,"./Components/Examples":238,"./Components/GetFavouriteRepositories":240,"./Components/MainComponent":241,"./Components/ParentComponent":245,"react":232,"react-dom":51,"react-router":81}]},{},[247]);

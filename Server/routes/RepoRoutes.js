@@ -8,6 +8,7 @@ DBConnection();
 
 router.route('/AddRepositories').post(function(req,res,next){
 	if(req.body){
+		req.body.Description="Default Description, Please Update";
 		var RepositoryVar = new Repositories(req.body);
 		console.log(req.body);
 		console.log(RepositoryVar);
@@ -60,6 +61,37 @@ router.route('/GetCategoryFavourites').post(function(req,res,next){
 		}
 	});
 
+	}
+});
+
+router.route('/UpdateRepository').put(function(req,res,next){
+	if(req.body){
+		console.log(req.body);
+		Repositories.update({repoID:req.body.repoID}, {Category:req.body.Category, Description:req.body.Description});
+		console.log("Repository Updated");
+		res.send("Repository Updated");
+	}
+	else{
+		res.send("Please enter the required details");
+	}
+});
+
+router.route('/DeleteRepository').delete(function(req,res,next){
+	if(req.body){
+		console.log(req.body);
+		Repositories.remove({repoID:req.body.repoID}, function(err){
+			if(err){
+				res.send(err);
+			}
+
+			else{
+				console.log('Repository Deleted');
+				res.send('Repository Deleted');
+			}
+		});
+	}
+	else{
+		res.send('The given repository could not be deleted');
 	}
 });
 

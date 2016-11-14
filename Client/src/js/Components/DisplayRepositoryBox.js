@@ -9,6 +9,7 @@ var DisplayRepositoryBox=React.createClass({
 		repoDbObj.Access=repoObject.private;
 		repoDbObj.Stars=repoObject.stargazers_count;
 		repoDbObj.Category=Category;
+		repoDbObj.Avatar=repoObject.owner.avatar_url;
 		var url="http://localhost:8085/repos/AddRepositories";
 		$.ajax({
 			url:url,

@@ -6,7 +6,9 @@ var RepositoriesSchema = new Schema({
 	Name:String,
 	Access:String,
 	Stars:String,
-	Category:String
+	Category:String,
+	Avatar:String,
+	Description:String
 });
 
 AddRepositories = mongoose.model('Repositories', RepositoriesSchema );
