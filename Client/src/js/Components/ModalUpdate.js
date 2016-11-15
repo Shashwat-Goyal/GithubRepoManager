@@ -7,7 +7,7 @@ var ModalUpdate=React.createClass({
 		var Description=this.refs.Description.value;
 		this.refs.Description.value='';
 		alert(repoID+" "+Description);
-		this.props.onUpdate(repoID, Description);
+		this.props.onUpdate(repoID, Description); //passing the paramenters to the parent via props function
 	},
 
 	render:function(){

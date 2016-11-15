@@ -9,7 +9,7 @@ var FavouriteRepoDisplay=React.createClass({
 
 	DeleteRepo:function(){
 		alert('Entering Delete');
-		this.props.onDelete(this.props.RepoObj.repoID);
+		this.props.onDelete(this.props.RepoObj.repoID, this.props.RepoObj.Category);
 	},
 
 	render:function(){

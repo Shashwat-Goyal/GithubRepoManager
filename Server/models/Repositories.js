@@ -1,5 +1,6 @@
 var mongoose=require("mongoose");
 var Schema=mongoose.Schema;
+//Defining The Schema
 
 var RepositoriesSchema = new Schema({
 	repoID:String,

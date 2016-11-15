@@ -14,7 +14,7 @@ var ParentComponent=React.createClass({
 		alert(input+"  "+choice);
 		var url='';
 		if(choice==="UserName"){
-		 url="https://api.github.com/users/"+input+"/repos";
+		 url="https://api.github.com/users/"+input+"/repos"; //Ajax Call to the github API to fetch the user Repositories
 		 $.ajax({
 		url:url,
 		type:"GET",
@@ -30,7 +30,7 @@ var ParentComponent=React.createClass({
 	}
 
 	else{
-		 url="https://api.github.com/search/repositories?q="+input+"&sort=stars&order=desc";
+		 url="https://api.github.com/search/repositories?q="+input+"&sort=stars&order=desc"; //Ajax Call to the github API to fetch the Technology Repositories
 		 $.ajax({
 		url:url,
 		type:"GET",

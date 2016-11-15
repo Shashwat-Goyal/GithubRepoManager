@@ -6,7 +6,8 @@ var GetFavouriteRepositories=React.createClass({
 	getInitialState:function(){
 		return({SelectOptions:[], value:'select', FavouriteRepoObj:[]});
 	},
-	
+
+//Using ComponentDidMount to populate the select List as soon as the component is rendered.
 	componentDidMount:function(){
 		var url="http://localhost:8085/repos/GetCategoryOptions";
 		$.ajax({
@@ -40,7 +41,7 @@ var GetFavouriteRepositories=React.createClass({
 				this.setState({FavouriteRepoObj:data});
 			}.bind(this),
 			error:function(err){
-				console.log(err);	
+				console.log(err);
 			}.bind(this)
 		});
 	},
@@ -78,7 +79,7 @@ var GetFavouriteRepositories=React.createClass({
 		});
 	},
 
-	DeleteRepository:function(repoID){
+	DeleteRepository:function(repoID, repoCategory){
 		alert(repoID);
 		var DeleteRepoObj={};
 		DeleteRepoObj.repoID=repoID;
@@ -94,7 +95,20 @@ var GetFavouriteRepositories=React.createClass({
 				});
 				if(index!=-1){
 					this.state.FavouriteRepoObj.splice(index, 1);
+					if(this.state.FavouriteRepoObj.length==0){
+						var i=this.state.SelectOptions.findIndex(function(element){
+							return element===repoCategory;
+						});
+						if(i!=-1){
+							console.log('Entering category state');
+						this.state.SelectOptions.splice(i, 1);
+						this.setState({FavouriteRepoObj:this.state.FavouriteRepoObj, SelectOptions:this.state.SelectOptions});
+						alert("Sorry You have deleted all repositories of the selected Category, Please Add Repos");
+						}
+					}
+					else{
 					this.setState({FavouriteRepoObj:this.state.FavouriteRepoObj});
+					}
 				}
 			}.bind(this),
 			error:function(err){
@@ -104,8 +118,8 @@ var GetFavouriteRepositories=React.createClass({
 	},
 
 	render:function(){
-		
-		
+
+
 		console.log(this.state.SelectOptions.length);
 		var SelectListArr=this.state.SelectOptions.map(function(option){
 			console.log('entering');
@@ -121,8 +135,8 @@ var GetFavouriteRepositories=React.createClass({
 		return(
 			<div style={{marginTop:'100'}}>
 			<div style={{textAlign:'center'}}>
-			Please Select your Category: &emsp;
-				<select id='myList' onChange={this.GetCategoryFavourites}>
+			<h3>Please Select your Category:</h3> &emsp;
+				<select id='myList' className="selectpicker btn btn-info btn-group-lg"  onChange={this.GetCategoryFavourites}>
 					<option value="Select">Select</option>
 					{SelectListArr}
 				</select>

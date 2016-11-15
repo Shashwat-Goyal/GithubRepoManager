@@ -26207,7 +26207,7 @@ var DisplayRepositoryBox=React.createClass({displayName: "DisplayRepositoryBox",
 		repoDbObj.Stars=repoObject.stargazers_count;
 		repoDbObj.Category=Category;
 		repoDbObj.Avatar=repoObject.owner.avatar_url;
-		var url="http://localhost:8085/repos/AddRepositories";
+		var url="http://localhost:8085/repos/AddRepositories"; 
 		$.ajax({
 			url:url,
 			type:'POST',
@@ -26270,7 +26270,7 @@ var DisplayRepositoryBox=React.createClass({displayName: "DisplayRepositoryBox",
 			React.createElement("hr", null), 
 			React.createElement(ModalCategory, {onAdd: this.handleAddRepository, id: RepoObject.id, RepoObj: RepoObject})
 			)
-			
+
 			);
 		}
 		else{
@@ -26298,15 +26298,14 @@ var DisplayRepositoryBox=React.createClass({displayName: "DisplayRepositoryBox",
 			React.createElement("hr", null), 
 			React.createElement(ModalCategory, {onAdd: this.handleAddRepository, id: RepoObject.id, RepoObj: RepoObject})
 			)
-			 
+
 			);
 	}
 }
 });
 
 module.exports=DisplayRepositoryBox;
-
-},{"./ModalCategory":242,"react":232}],238:[function(require,module,exports){
+},{"./ModalCategory":244,"react":232}],238:[function(require,module,exports){
 var React=require('react');
 
 var Examples=React.createClass({displayName: "Examples",
@@ -26331,7 +26330,7 @@ var FavouriteRepoDisplay=React.createClass({displayName: "FavouriteRepoDisplay",
 
 	DeleteRepo:function(){
 		alert('Entering Delete');
-		this.props.onDelete(this.props.RepoObj.repoID);
+		this.props.onDelete(this.props.RepoObj.repoID, this.props.RepoObj.Category);
 	},
 
 	render:function(){
@@ -26391,7 +26390,7 @@ var FavouriteRepoDisplay=React.createClass({displayName: "FavouriteRepoDisplay",
 
 module.exports=FavouriteRepoDisplay;
 
-},{"./ModalUpdate":243,"react":232}],240:[function(require,module,exports){
+},{"./ModalUpdate":245,"react":232}],240:[function(require,module,exports){
 var React=require('react');
 
 var FavouriteRepoDisplay=require('./FavouriteRepoDisplay');
@@ -26400,7 +26399,8 @@ var GetFavouriteRepositories=React.createClass({displayName: "GetFavouriteReposi
 	getInitialState:function(){
 		return({SelectOptions:[], value:'select', FavouriteRepoObj:[]});
 	},
-	
+
+//Using ComponentDidMount to populate the select List as soon as the component is rendered.
 	componentDidMount:function(){
 		var url="http://localhost:8085/repos/GetCategoryOptions";
 		$.ajax({
@@ -26434,7 +26434,7 @@ var GetFavouriteRepositories=React.createClass({displayName: "GetFavouriteReposi
 				this.setState({FavouriteRepoObj:data});
 			}.bind(this),
 			error:function(err){
-				console.log(err);	
+				console.log(err);
 			}.bind(this)
 		});
 	},
@@ -26472,7 +26472,7 @@ var GetFavouriteRepositories=React.createClass({displayName: "GetFavouriteReposi
 		});
 	},
 
-	DeleteRepository:function(repoID){
+	DeleteRepository:function(repoID, repoCategory){
 		alert(repoID);
 		var DeleteRepoObj={};
 		DeleteRepoObj.repoID=repoID;
@@ -26488,7 +26488,20 @@ var GetFavouriteRepositories=React.createClass({displayName: "GetFavouriteReposi
 				});
 				if(index!=-1){
 					this.state.FavouriteRepoObj.splice(index, 1);
+					if(this.state.FavouriteRepoObj.length==0){
+						var i=this.state.SelectOptions.findIndex(function(element){
+							return element===repoCategory;
+						});
+						if(i!=-1){
+							console.log('Entering category state');
+						this.state.SelectOptions.splice(i, 1);
+						this.setState({FavouriteRepoObj:this.state.FavouriteRepoObj, SelectOptions:this.state.SelectOptions});
+						alert("Sorry You have deleted all repositories of the selected Category, Please Add Repos");
+						}
+					}
+					else{
 					this.setState({FavouriteRepoObj:this.state.FavouriteRepoObj});
+					}
 				}
 			}.bind(this),
 			error:function(err){
@@ -26498,8 +26511,8 @@ var GetFavouriteRepositories=React.createClass({displayName: "GetFavouriteReposi
 	},
 
 	render:function(){
-		
-		
+
+
 		console.log(this.state.SelectOptions.length);
 		var SelectListArr=this.state.SelectOptions.map(function(option){
 			console.log('entering');
@@ -26515,8 +26528,8 @@ var GetFavouriteRepositories=React.createClass({displayName: "GetFavouriteReposi
 		return(
 			React.createElement("div", {style: {marginTop:'100'}}, 
 			React.createElement("div", {style: {textAlign:'center'}}, 
-			"Please Select your Category:  ", 
-				React.createElement("select", {id: "myList", onChange: this.GetCategoryFavourites}, 
+			React.createElement("h3", null, "Please Select your Category:"), "  ", 
+				React.createElement("select", {id: "myList", className: "selectpicker btn btn-info btn-group-lg", onChange: this.GetCategoryFavourites}, 
 					React.createElement("option", {value: "Select"}, "Select"), 
 					SelectListArr
 				)
@@ -26530,6 +26543,130 @@ var GetFavouriteRepositories=React.createClass({displayName: "GetFavouriteReposi
 
 module.exports=GetFavouriteRepositories;
 },{"./FavouriteRepoDisplay":239,"react":232}],241:[function(require,module,exports){
+var React = require('react');
+
+var {browserHistory}= require ('react-router');
+
+var LoginComponent = React.createClass({displayName: "LoginComponent",
+
+checkUser:function(){
+var userObj={"username":this.refs.userName.value,"password":this.refs.passWord.value};
+$.ajax({
+
+  url:'http://localhost:8085/login',
+
+  type: 'POST',
+
+  data:userObj,
+
+  dataType:"JSON",
+
+  success: function(data)
+
+  {
+
+ console.log("Ajax login success");
+
+   browserHistory.push('/search');
+
+  }.bind(this),
+
+  error: function(err)
+
+  {
+
+    console.log(err);
+
+  }.bind(this)
+
+});
+
+},
+
+render : function () {
+
+  return(
+
+    React.createElement("div", {className: "container", style: {marginTop:'100'}}, 
+
+      React.createElement("div", {className: "jumbotron"}, 
+
+        React.createElement("h2", {style: {textAlign:'center', color:'#0000A0'}}, " Welcome to GitHub Repository Manger Application "), 
+        React.createElement("br", null), 
+        React.createElement("img", {src: "https://enterprise.github.com/assets/aws/jetpack-octocat-airlock-b4e1d022c0113c997328f6598d16e58ad049140e50da4859d6b4d174890bb1c8.jpg", className: "img-responsive"})
+        
+      ), 
+
+        React.createElement("h3", {className: "form-signin-heading"}, "Please LOGIN and Enter into a new world of GitHub "), 
+
+        React.createElement("div", {className: "row"}, 
+        React.createElement("div", {className: "col-lg-9"}, 
+        React.createElement("div", {className: "input-group input-group-md"}, 
+
+            React.createElement("span", {className: "input-group-addon"}, "Username"), 
+
+            React.createElement("input", {type: "text", ref: "userName", className: "form-control"})
+
+        ), 
+
+        React.createElement("br", null), 
+        
+        React.createElement("div", {className: "input-group input-group-md"}, 
+
+            React.createElement("span", {className: "input-group-addon"}, "Password"), 
+
+            React.createElement("input", {type: "password", ref: "passWord", className: "form-control"})
+
+        ), 
+
+        React.createElement("br", null), 
+
+        React.createElement("button", {onClick: this.checkUser, className: "btn btn-md btn-primary btn-block"}, "LOGIN"), 
+
+        React.createElement("br", null)
+        )
+        )
+    )
+
+  )
+
+  }
+
+  });
+module.exports = LoginComponent;
+},{"react":232,"react-router":81}],242:[function(require,module,exports){
+var React = require('react');
+var {browserHistory}= require ('react-router');
+var LogoutComponent = React.createClass({displayName: "LogoutComponent",
+ logout(){
+   $.ajax({
+     url:'http://localhost:8085/logout',
+     type: 'GET',
+     success: function(data)
+     {
+    console.log("Ajax logout success");
+      browserHistory.push('/');
+     }.bind(this),
+     error: function(err)
+     {
+       console.log(err);
+     }.bind(this)
+   });
+ },
+componentDidMount:function(){
+   this.logout();
+},
+ render : function () {
+   return(
+      React.createElement("div", null, 
+      React.createElement("h1", null, "User logging out")
+)
+   )
+ }
+});
+
+module.exports = LogoutComponent;
+},{"react":232,"react-router":81}],243:[function(require,module,exports){
 var React=require('react');
 var NavComponent=require('./Nav');
 
@@ -26545,7 +26682,7 @@ var MainComponent=React.createClass({displayName: "MainComponent",
 	});
 
 	module.exports=MainComponent;
-},{"./Nav":244,"react":232}],242:[function(require,module,exports){
+},{"./Nav":246,"react":232}],244:[function(require,module,exports){
 var React=require('react');
 
 var ModalCategory=React.createClass({displayName: "ModalCategory",
@@ -26632,7 +26769,7 @@ var ModalCategory=React.createClass({displayName: "ModalCategory",
 
 module.exports=ModalCategory;
 
-},{"react":232}],243:[function(require,module,exports){
+},{"react":232}],245:[function(require,module,exports){
 var React=require('react');
 
 var ModalUpdate=React.createClass({displayName: "ModalUpdate",
@@ -26642,7 +26779,7 @@ var ModalUpdate=React.createClass({displayName: "ModalUpdate",
 		var Description=this.refs.Description.value;
 		this.refs.Description.value='';
 		alert(repoID+" "+Description);
-		this.props.onUpdate(repoID, Description);
+		this.props.onUpdate(repoID, Description); //passing the paramenters to the parent via props function
 	},
 
 	render:function(){
@@ -26695,29 +26832,32 @@ var ModalUpdate=React.createClass({displayName: "ModalUpdate",
 
 module.exports=ModalUpdate;
 
-},{"react":232}],244:[function(require,module,exports){
+},{"react":232}],246:[function(require,module,exports){
 var React=require('react');
 var Link=require('react-router').Link;
 var IndexLink=require('react-router').IndexLink;
 var Nav=React.createClass({displayName: "Nav",
 	render: function(){
 		return(
-			
+
 			React.createElement("div", {className: "container-fluid"}, 
 		React.createElement("div", {className: "row"}, 
 		React.createElement("div", {className: "col-md-12"}, 
 			React.createElement("nav", {className: "navbar navbar-fixed-top navbar-inverse", role: "navigation"}, 
 				React.createElement("div", {className: "navbar-header"}, 
-					 
+
 					React.createElement("button", {type: "button", className: "navbar-toggle", "data-toggle": "collapse", "data-target": "#bs-example-navbar-collapse-1"}, 
 						 React.createElement("span", {className: "sr-only"}, "Toggle navigation"), React.createElement("span", {className: "icon-bar"}), React.createElement("span", {className: "icon-bar"}), React.createElement("span", {className: "icon-bar"})
 					), " ", React.createElement("a", {className: "navbar-brand", href: "#"}, " RepoManagerApp ")
 				), 
-				
+
 				React.createElement("div", {className: "collapse navbar-collapse", id: "bs-example-navbar-collapse-1"}, 
 					React.createElement("ul", {className: "nav navbar-nav"}, 
 						React.createElement("li", {className: "active"}, 
-							React.createElement(IndexLink, {to: "/"}, " Search Repositories ")
+							React.createElement(IndexLink, {to: "/"}, " Home ")
+						), 
+						React.createElement("li", null, 
+							React.createElement(Link, {to: "/search"}, " Search Repositories ")
 						), 
 						React.createElement("li", null, 
 							React.createElement(Link, {to: "/about"}, " About ")
@@ -26726,9 +26866,11 @@ var Nav=React.createClass({displayName: "Nav",
 							React.createElement(Link, {to: "/contactUs"}, " Contact Us ")
 						), 
 						React.createElement("li", null, 
-							React.createElement(Link, {to: "/logout"}, " Logout ")
+							React.createElement(Link, {to: "/LogoutComponent"}, " Logout ")
 						), 
-
+						React.createElement("li", null, 
+							React.createElement(Link, {to: "/SignUp"}, "SignUp")
+						), 
 						React.createElement("li", {className: "dropdown"}, 
 							 React.createElement("a", {href: "#", className: "dropdown-toggle", "data-toggle": "dropdown"}, " Actions ", React.createElement("strong", {className: "caret"})), 
 							React.createElement("ul", {className: "dropdown-menu"}, 
@@ -26736,34 +26878,14 @@ var Nav=React.createClass({displayName: "Nav",
 									React.createElement(Link, {to: "/getFavourites"}, " Get Favourite Repositories ")
 								), 
 								React.createElement("li", {className: "divider"}
-								), 
-								React.createElement("li", null, 
-									React.createElement("a", {href: "#"}, " Delete ")
-								), 
-								React.createElement("li", {className: "divider"}
-								), 
-								React.createElement("li", null, 
-									React.createElement("a", {href: "#"}, " Update Movies ")
 								)
-							)
-						)
-					), 
-					React.createElement("ul", {className: "nav navbar-nav navbar-right", style: {paddingRight:'20'}}, 
-						React.createElement("li", {className: "dropdown"}, 
-							 React.createElement("a", {href: "#", className: "dropdown-toggle", "data-toggle": "dropdown"}, " My Account ", React.createElement("strong", {className: "caret"})), 
-							React.createElement("ul", {className: "dropdown-menu"}, 
-								React.createElement("li", null, 
-									React.createElement("a", {href: "#"}, "Login/Sign Up")
-								), 
-								React.createElement("li", null, 
-									React.createElement("a", {href: "#"}, "My Profile")
-								)
-								
 							)
 						)
 					)
+					
+					
 				)
-				
+
 			)
 		)
 	)
@@ -26774,7 +26896,7 @@ var Nav=React.createClass({displayName: "Nav",
 });
 
 module.exports=Nav;
-},{"react":232,"react-router":81}],245:[function(require,module,exports){
+},{"react":232,"react-router":81}],247:[function(require,module,exports){
 var React=require('react');
 var SearchComponent=require('./SearchComponent');
 var DisplayComponent=require('./DisplayComponent');
@@ -26791,7 +26913,7 @@ var ParentComponent=React.createClass({displayName: "ParentComponent",
 		alert(input+"  "+choice);
 		var url='';
 		if(choice==="UserName"){
-		 url="https://api.github.com/users/"+input+"/repos";
+		 url="https://api.github.com/users/"+input+"/repos"; //Ajax Call to the github API to fetch the user Repositories
 		 $.ajax({
 		url:url,
 		type:"GET",
@@ -26807,7 +26929,7 @@ var ParentComponent=React.createClass({displayName: "ParentComponent",
 	}
 
 	else{
-		 url="https://api.github.com/search/repositories?q="+input+"&sort=stars&order=desc";
+		 url="https://api.github.com/search/repositories?q="+input+"&sort=stars&order=desc"; //Ajax Call to the github API to fetch the Technology Repositories
 		 $.ajax({
 		url:url,
 		type:"GET",
@@ -26842,7 +26964,7 @@ var ParentComponent=React.createClass({displayName: "ParentComponent",
 
 module.exports=ParentComponent;
 
-},{"./DisplayComponent":236,"./SearchComponent":246,"react":232}],246:[function(require,module,exports){
+},{"./DisplayComponent":236,"./SearchComponent":248,"react":232}],248:[function(require,module,exports){
 var React=require('react');
 
 var SearchComponent=React.createClass({displayName: "SearchComponent",
@@ -26912,14 +27034,83 @@ var SearchComponent=React.createClass({displayName: "SearchComponent",
 
 module.exports=SearchComponent;
 
-},{"react":232}],247:[function(require,module,exports){
+},{"react":232}],249:[function(require,module,exports){
+var React = require('react');
+var {browserHistory} = require('react-router');
+var SignUp = React.createClass({displayName: "SignUp",
+
+   signUpFunction : function(){
+               var username = this.refs.userName.value;
+               var password= this.refs.pass.value;
+               var cpassword=this.refs.confirmPass.value;
+               if (password===cpassword)
+               {
+               var signupForm = {
+                   'username':this.refs.userName.value,
+                   'password':this.refs.pass.value,
+                                       }
+               //object1 = JSON.stringify(object1);
+               console.log(signupForm);
+               $.ajax({
+                   url:'http://localhost:8085/users/AddUser',
+                   type: 'POST',
+                   data: signupForm,
+                   success: function(data)
+                   {
+                       console.log(data);
+                       browserHistory.push('/');
+                   }.bind(this),
+                   error: function(err)
+                   {
+                       console.log(err);
+                   }.bind(this)
+                   });
+               }
+               else
+               {
+                       alert("password and confirm password have to be same !!");
+               }
+
+},
+
+render:function(){
+  return (
+
+      React.createElement("div", {className: "container"}, 
+          React.createElement("h1", {className: "form-signin-heading"}, "Please SIGN UP"), 
+          React.createElement("div", {className: "input-group input-group-lg"}, 
+              React.createElement("span", {className: "input-group-addon"}, "User Name"), 
+              React.createElement("input", {type: "text", ref: "userName", className: "form-control"})
+          ), 
+          React.createElement("br", null), 
+          React.createElement("div", {className: "input-group input-group-lg"}, 
+              React.createElement("span", {className: "input-group-addon"}, "  Password  "), 
+              React.createElement("input", {type: "password", ref: "pass", className: "form-control"})
+          ), 
+          React.createElement("br", null), 
+          React.createElement("div", {className: "input-group input-group-lg"}, 
+              React.createElement("span", {className: "input-group-addon"}, "Confirm Password"), 
+              React.createElement("input", {type: "password", ref: "confirmPass", className: "form-control"})
+          ), 
+          React.createElement("br", null), 
+          React.createElement("button", {onClick: this.signUpFunction, className: "btn btn-lg btn-primary btn-block"}, "SIGN UP"), 
+          React.createElement("br", null)
+      )
+
+)}
+});
+module.exports=SignUp;
+},{"react":232,"react-router":81}],250:[function(require,module,exports){
 var React=require('react');
 var ReactDOM=require('react-dom');
 var Route=require('react-router').Route;
 var Router=require('react-router').Router;
+var {browserHistory}= require ('react-router');
 var IndexRoute=require('react-router').IndexRoute;
 var hashHistory=require('react-router').hashHistory;
-
+var LoginComponent=require('./Components/LoginComponent');
+var SignUp=require('./Components/SignUp');
+var LogoutComponent=require('./Components/LogoutComponent');
 var MainComponent=require('./Components/MainComponent');
 var About=require('./Components/About');
 var ParentComponent=require('./Components/ParentComponent');
@@ -26927,14 +27118,16 @@ var Examples=require('./Components/Examples');
 var GetFavouriteRepositories=require('./Components/GetFavouriteRepositories');
 
 ReactDOM.render(
-	React.createElement(Router, {history: hashHistory}, 
+	React.createElement(Router, {history: browserHistory}, 
 		React.createElement(Route, {path: "/", component: MainComponent}, 
+		React.createElement(Route, {path: "search", component: ParentComponent}), 
+			React.createElement(Route, {path: "SignUp", component: SignUp}), 
+		React.createElement(Route, {path: "LogoutComponent", component: LogoutComponent}), 
 		React.createElement(Route, {path: "about", component: About}), 
 		React.createElement(Route, {path: "examples", component: Examples}), 
 		React.createElement(Route, {path: "getFavourites", component: GetFavouriteRepositories}), 
-		React.createElement(IndexRoute, {component: ParentComponent})
+		React.createElement(IndexRoute, {component: LoginComponent})
 		)
-	), 
+	),
 	document.getElementById('app')); //puts the virtual dom & injects into the main physical DOM.
-
-},{"./Components/About":235,"./Components/Examples":238,"./Components/GetFavouriteRepositories":240,"./Components/MainComponent":241,"./Components/ParentComponent":245,"react":232,"react-dom":51,"react-router":81}]},{},[247]);
+},{"./Components/About":235,"./Components/Examples":238,"./Components/GetFavouriteRepositories":240,"./Components/LoginComponent":241,"./Components/LogoutComponent":242,"./Components/MainComponent":243,"./Components/ParentComponent":247,"./Components/SignUp":249,"react":232,"react-dom":51,"react-router":81}]},{},[250]);

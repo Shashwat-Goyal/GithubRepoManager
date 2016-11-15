@@ -10,7 +10,7 @@ var DisplayRepositoryBox=React.createClass({
 		repoDbObj.Stars=repoObject.stargazers_count;
 		repoDbObj.Category=Category;
 		repoDbObj.Avatar=repoObject.owner.avatar_url;
-		var url="http://localhost:8085/repos/AddRepositories";
+		var url="http://localhost:8085/repos/AddRepositories"; 
 		$.ajax({
 			url:url,
 			type:'POST',
@@ -40,7 +40,7 @@ var DisplayRepositoryBox=React.createClass({
 		if(searchOption==="UserName"){
 			return (
 			<div style={{marginTop:'50'}}>
-			<div className="container"> 
+			<div className="container">
 			<div className="row">
 			<div className="col-lg-10">
 			 <h3> Repository ID:<small style={{fontSize:"20px"}}> {RepoObject.id} </small></h3>
@@ -73,14 +73,14 @@ var DisplayRepositoryBox=React.createClass({
 			<hr></hr>
 			<ModalCategory onAdd={this.handleAddRepository} id={RepoObject.id} RepoObj={RepoObject}></ModalCategory>
 			</div>
-			
+
 			);
 		}
 		else{
 
 		return (
 			<div style={{marginTop:'50'}}>
-			<div className="container"> 
+			<div className="container">
 			<div className="row">
 			<div className="col-lg-3 col-offset-1">
 			<img src={RepoObject.owner.avatar_url} className="img-rounded" alt="User's Picture Here" height="200" width="200"></img>
@@ -101,7 +101,7 @@ var DisplayRepositoryBox=React.createClass({
 			<hr></hr>
 			<ModalCategory onAdd={this.handleAddRepository} id={RepoObject.id} RepoObj={RepoObject}></ModalCategory>
 			</div>
-			 
+
 			);
 	}
 }
